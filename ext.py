@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as bs
+import csv
 
 url="https://www.glassdoor.co.in/Job/jobs.htmsuggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=&typedLocation=india&locT=&locId=&jobType=&context=Jobs&sc.keyword=wipro&dropdown=0"
 headers = {
@@ -19,14 +20,20 @@ headers = {
     }
 response=requests.get(url=url,headers=headers)
 data=bs(response.content, "html.parser")
-# print(data)
+print(data)
 with open("file.html","a+") as f:
     f.write(str(data))
+
+csv_file = open("data_file.csv","a+",newline="")
+writer = csv.writer(csv_file)
     
 k=data.find_all("li",{"class":"eigr9kq3"})
 for i in k:
     title=i.find("a",{"class":"eigr9kq2"}).string
-    print(title)
     location=i.find("span",{"class": "e1rrn5ka0"}).string
-    print(location)
-    # break
+    role=i.find("a",{"class": "css-l2wjgv e1n63ojh0 jobLink"}).string
+    date=i.find("div",{"class": "d-flex align-items-end pl-std css-1vfumx3"}).string
+    salary=i.find("span",{"class": "css-1xe2xww e1wijj242"}).text.strip()
+    json1_data = [[title,location,role,date,salary]]
+    print(json1_data)
+    writer.writerows(json1_data)
